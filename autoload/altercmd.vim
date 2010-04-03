@@ -55,7 +55,7 @@ endfunction
 
 
 function! altercmd#load()  "{{{2
-  runtime plugin/altercmd.vim
+  runtime! plugin/altercmd.vim
 endfunction
 
 
