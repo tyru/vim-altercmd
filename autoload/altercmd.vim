@@ -23,6 +23,10 @@
 " }}}
 " Interface  "{{{1
 function! altercmd#define(...)  "{{{2
+  if a:0 < 2
+    return
+  endif
+
   let buffer_p = (a:000[0] ==? '<buffer>')
   let original_name = a:000[buffer_p ? 1 : 0]
   let alternate_name = a:000[buffer_p ? 2 : 1]
