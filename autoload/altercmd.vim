@@ -23,13 +23,36 @@
 " }}}
 " Interface  "{{{1
 function! altercmd#define(...)  "{{{2
-  if a:0 < 2
+  try
+    let [options, lhs_list, alternate_name] = s:parse_args(a:000)
+  catch /^parse error$/
     return
+  endtry
+
+  for lhs in lhs_list
+    execute
+    \ 'cnoreabbrev <expr>' . (options.buffer ? '<buffer>' : '')
+    \ lhs
+    \ '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
+    \ '?' ('"' . alternate_name . '"')
+    \ ':' ('"' . lhs . '"')
+  endfor
+endfunction
+
+
+
+function! s:parse_args(args)  "{{{2
+  let parse_error = 'parse error'
+  if len(a:args) < 2
+    throw parse_error
   endif
 
-  let buffer_p = (a:000[0] ==? '<buffer>')
-  let original_name = a:000[buffer_p ? 1 : 0]
-  let alternate_name = a:000[buffer_p ? 2 : 1]
+  let options = {}
+  let lhs_list = []
+
+  let options.buffer = (a:args[0] ==? '<buffer>')
+  let original_name = a:args[options.buffer ? 1 : 0]
+  let alternate_name = a:args[options.buffer ? 2 : 1]
 
   if original_name =~ '\['
     let [original_name_head, original_name_tail] = split(original_name, '[')
@@ -42,13 +65,10 @@ function! altercmd#define(...)  "{{{2
   let original_name_tail = ' ' . original_name_tail
   for i in range(len(original_name_tail))
     let lhs = original_name_head . original_name_tail[1:i]
-    execute
-    \ 'cnoreabbrev <expr>' . (buffer_p ? '<buffer>' : '')
-    \ lhs
-    \ '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
-    \ '?' ('"' . alternate_name . '"')
-    \ ':' ('"' . lhs . '"')
+    call add(lhs_list, lhs)
   endfor
+
+  return [options, lhs_list, alternate_name]
 endfunction
 
 
