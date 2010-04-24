@@ -30,12 +30,16 @@ function! altercmd#define(...)  "{{{2
   endtry
 
   for lhs in lhs_list
+    if options.mode ==# 'c'
+      let condition = '(getcmdtype() == ' . string(options.cmdtype) . ' && getcmdline() ==# ' . string(lhs)  . ')'
+    else
+      let condition = '(getline(".") ==# ' . string(lhs) . ')'
+    endif
+
     execute
     \ options.mode . 'noreabbrev <expr>' . (options.buffer ? '<buffer>' : '')
     \ lhs
-    \ '(getcmdtype() == "' . options.cmdtype . '" && getcmdline() ==# "' . lhs  . '")'
-    \ '?' ('"' . alternate_name . '"')
-    \ ':' ('"' . lhs . '"')
+    \ condition '?' string(alternate_name) ':' string(lhs)
   endfor
 endfunction
 
