@@ -31,9 +31,9 @@ function! altercmd#define(...)  "{{{2
 
   for lhs in lhs_list
     execute
-    \ 'cnoreabbrev <expr>' . (options.buffer ? '<buffer>' : '')
+    \ options.mode . 'noreabbrev <expr>' . (options.buffer ? '<buffer>' : '')
     \ lhs
-    \ '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
+    \ '(getcmdtype() == "' . options.cmdtype . '" && getcmdline() ==# "' . lhs  . '")'
     \ '?' ('"' . alternate_name . '"')
     \ ':' ('"' . lhs . '"')
   endfor
@@ -42,17 +42,27 @@ endfunction
 
 
 function! s:parse_args(args)  "{{{2
+  let args = a:args
   let parse_error = 'parse error'
-  if len(a:args) < 2
+
+  if len(args) < 2
     throw parse_error
   endif
 
-  let options = {}
+  let options = {
+  \ 'cmdtype': ':',
+  \ 'mode': 'c',
+  \}
   let lhs_list = []
 
-  let options.buffer = (a:args[0] ==? '<buffer>')
-  let original_name = a:args[options.buffer ? 1 : 0]
-  let alternate_name = a:args[options.buffer ? 2 : 1]
+  let options.buffer = (args[0] ==? '<buffer>')
+  if options.buffer
+    call remove(args, 0)
+  endif
+  let [original_name, alternate_name] = args[0:1]
+  if len(args) >= 3 && type(args[2]) == type({})
+    call extend(options, args[2])
+  endif
 
   if original_name =~ '\['
     let [original_name_head, original_name_tail] = split(original_name, '[')
