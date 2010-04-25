@@ -22,6 +22,9 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 " Interface  "{{{1
+
+
+
 function! altercmd#define(...)  "{{{2
   try
     let [options, lhs_list, alternate_name] = s:parse_args(a:000)
@@ -30,7 +33,9 @@ function! altercmd#define(...)  "{{{2
   endtry
 
   for lhs in lhs_list
-    if options.mode ==# 'c'
+    if options.cmdwin
+      let condition = '(expand("%") ==# "[Command Line]" && getline(".") ==# ' . string(lhs) . ')'
+    elseif options.mode ==# 'c'
       let condition = '(getcmdtype() == ' . string(options.cmdtype) . ' && getcmdline() ==# ' . string(lhs)  . ')'
     else
       let condition = '(getline(".") ==# ' . string(lhs) . ')'
@@ -56,6 +61,7 @@ function! s:parse_args(args)  "{{{2
   let options = {
   \ 'cmdtype': ':',
   \ 'mode': 'c',
+  \ 'cmdwin': 0,
   \}
   let lhs_list = []
 
