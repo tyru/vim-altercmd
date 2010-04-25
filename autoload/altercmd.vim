@@ -51,7 +51,7 @@ endfunction
 
 
 function! s:parse_args(args)  "{{{2
-  let args = a:args
+  let args = copy(a:args)
   let parse_error = 'parse error'
 
   if len(args) < 2
@@ -62,13 +62,30 @@ function! s:parse_args(args)  "{{{2
   \ 'cmdtype': ':',
   \ 'mode': 'c',
   \ 'cmdwin': 0,
+  \ 'buffer': 0,
   \}
   let lhs_list = []
 
-  let options.buffer = (args[0] ==? '<buffer>')
-  if options.buffer
-    call remove(args, 0)
-  endif
+
+  " Parse options.
+  while args[0] =~# '^<[^<>]\+>$'
+    let arg = remove(args, 0)
+
+    if arg ==? '<buffer>'
+      let options.buffer = 1
+    elseif arg =~# '^<cmdtype:[^<>]\+>$'
+      let options.cmdtype = matchstr(arg, '^<cmdtype:\zs[^<>]\+\ze>$')
+    elseif arg =~# '^<mode:[^<>]\+>$'
+      let options.mode = matchstr(arg, '^<mode:\zs[^<>]\+\ze>$')
+    elseif arg ==# '<cmdwin>'
+      let options.cmdwin = 1
+    else
+      let args = [arg] + args
+      break
+    endif
+  endwhile
+
+
   let [original_name, alternate_name] = args[0:1]
   if len(args) >= 3 && type(args[2]) == type({})
     call extend(options, args[2])
