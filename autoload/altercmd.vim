@@ -31,8 +31,10 @@ function! altercmd#define(...)  "{{{2
       return
     endtry
   elseif a:0 >= 4
-    " TODO
-    let [hoge, lhs, alternate_name, modes] = a:000
+    let [opt_chars, lhs, alternate_name, modes] = a:000
+    let options = s:convert_options(opt_chars)
+    let options.modes = modes
+    let lhs_list = s:generate_lhs_list(lhs)
   else
     call s:echomsg('WarningMsg', 'invalid argument')
     return
@@ -107,12 +109,18 @@ function! s:parse_args(args)  "{{{2
   let [original_name, args] = s:parse_one_arg_from_q_args(args)
   let [alternate_name, args] = s:parse_one_arg_from_q_args(args)
 
+  return [options, s:generate_lhs_list(original_name), alternate_name]
+endfunction
 
-  if original_name =~ '\['
-    let [original_name_head, original_name_tail] = split(original_name, '[')
+
+
+
+function! s:generate_lhs_list(lhs) "{{{2
+  if a:lhs =~ '\['
+    let [original_name_head, original_name_tail] = split(a:lhs, '[')
     let original_name_tail = substitute(original_name_tail, '\]', '', '')
   else
-    let original_name_head = original_name
+    let original_name_head = a:lhs
     let original_name_tail = ''
   endif
 
@@ -123,7 +131,21 @@ function! s:parse_args(args)  "{{{2
     call add(lhs_list, lhs)
   endfor
 
-  return [options, lhs_list, alternate_name]
+  return lhs_list
+endfunction
+
+
+
+
+function! s:convert_options(opt_chars) "{{{2
+  let table = {'b': 'buffer'}
+  let options = {}
+  for c in split(a:opt_chars, '\zs')
+    if has_key(table, c)
+      let options[table[c]] = 1
+    endif
+  endfor
+  return options
 endfunction
 
 
