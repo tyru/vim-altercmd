@@ -37,13 +37,21 @@ function! altercmd#define(...)  "{{{2
     return
   endif
 
-  for lhs in lhs_list
-    execute
-    \ 'cnoreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
-    \ lhs
-    \ '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
-    \ '?' ('"' . alternate_name . '"')
-    \ ':' ('"' . lhs . '"')
+  let modes = get(options, 'modes', 'c')
+  for mode in split(modes, '\zs')
+    for lhs in lhs_list
+      if mode ==# 'c'
+        let cond = '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
+      else
+        let cond = '(getline(".") ==# "' . lhs . '")'
+      endif
+      execute
+      \ mode . 'noreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
+      \ lhs
+      \ cond
+      \ '?' ('"' . alternate_name . '"')
+      \ ':' ('"' . lhs . '"')
+    endfor
   endfor
 endfunction
 
@@ -72,7 +80,7 @@ function! s:parse_options(args) "{{{2
   let opt = {}
 
   while args != ''
-    let o = matchstr(args, '^<[^<>]\{-1,}>')
+    let o = matchstr(args, '^<[^<>]\+>')
     if o == ''
       break
     endif
@@ -81,8 +89,8 @@ function! s:parse_options(args) "{{{2
     if o ==? '<buffer>'
       let opt.buffer = 1
     endif
-    let m = matchlist(o, '^<mode:\([^<>]\{-1,}\)>$')
-    if !empty(m) && m[1] =~# '^[nvoiclxs]\+$'
+    let m = matchlist(o, '^<mode:\([nvoiclxs]\+\)>$')
+    if !empty(m)
       let opt.modes = m[1]
     endif
   endwhile
