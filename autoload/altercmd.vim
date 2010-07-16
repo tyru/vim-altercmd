@@ -42,16 +42,16 @@ function! altercmd#define(...)  "{{{2
   for mode in split(modes, '\zs')
     for lhs in lhs_list
       if mode ==# 'c'
-        let cond = '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
+        let cond = '(getcmdtype() == ":" && getcmdline() ==# ' . string(lhs)  . ')'
       else
-        let cond = '(getline(".") ==# "' . lhs . '")'
+        let cond = '(getline(".") ==# ' . string(lhs) . ')'
       endif
       execute
       \ mode . 'noreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
       \ lhs
       \ cond
-      \ '?' ('"' . alternate_name . '"')
-      \ ':' ('"' . lhs . '"')
+      \ '?' string(alternate_name)
+      \ ':' string(lhs)
     endfor
   endfor
 endfunction
