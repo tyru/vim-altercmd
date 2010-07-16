@@ -56,37 +56,42 @@ function! altercmd#define(...)  "{{{2
 endfunction
 
 function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
-  if get(a:options, 'cmdwin', 0)
+  let options = a:options
+  let lhs_list = a:lhs_list
+  let alternate_name = a:alternate_name
+  let modes = a:modes
+
+  if get(options, 'cmdwin', 0)
     " Avoid infinite recursion.
-    silent! unlet a:options.cmdwin
+    silent! unlet options.cmdwin
     " Cmdwin mappings should be buffer-local.
-    let a:options.buffer = 1
+    let options.buffer = 1
     " Cmdwin mappings should work only in insert-mode.
-    " let a:modes = 'i'
+    " let modes = 'i'
 
     execute
     \ 'autocmd altercmd CmdwinEnter *'
     \ 'call'
     \ 's:do_define('
-    \   string(a:options) ','
-    \   string(a:lhs_list) ','
-    \   string(a:alternate_name) ','
+    \   string(options) ','
+    \   string(lhs_list) ','
+    \   string(alternate_name) ','
     \   string('i') ','
     \ ')'
   endif
 
-  for mode in split(a:modes, '\zs')
-    for lhs in a:lhs_list
+  for mode in split(modes, '\zs')
+    for lhs in lhs_list
       if mode ==# 'c'
         let cond = '(getcmdtype() == ":" && getcmdline() ==# ' . string(lhs)  . ')'
       else
         let cond = '(getline(".") ==# ' . string(lhs) . ')'
       endif
       execute
-      \ mode . 'noreabbrev <expr>' . (get(a:options, 'buffer', 0) ? '<buffer>' : '')
+      \ mode . 'noreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
       \ lhs
       \ cond
-      \ '?' string(a:alternate_name)
+      \ '?' string(alternate_name)
       \ ':' string(lhs)
     endfor
   endfor
