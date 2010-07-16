@@ -78,6 +78,8 @@ function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
     \   string(alternate_name) ','
     \   string(m) ','
     \ ')'
+
+    return
   endif
 
   for mode in split(modes, '\zs')
