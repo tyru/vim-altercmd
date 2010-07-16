@@ -41,6 +41,7 @@ function! altercmd#define(...)  "{{{2
       return
     endtry
   elseif a:0 >= 4
+    " For altercmd#define() (function version).
     let [opt_chars, lhs, alternate_name, modes] = a:000
     let options = s:convert_options(opt_chars)
     let options.modes = modes
