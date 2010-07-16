@@ -30,18 +30,15 @@ endfunction
 
 
 function! altercmd#define(...)  "{{{2
-  if a:0 == 2 || a:0 == 3
+  if a:0 == 2
     " For :AlterCommand family
-    let [args, modes; opt] = a:000
+    let [args, modes] = a:000
     try
       let [options, lhs_list, alternate_name] = s:parse_args(args)
     catch /^parse error$/
       call s:echomsg('WarningMsg', 'invalid argument')
       return
     endtry
-    if !empty(opt) && opt[0] != ''
-      call extend(options, s:convert_options(opt[0]))
-    endif
   elseif a:0 >= 4
     " For altercmd#define() (function version).
     let [opt_chars, lhs, alternate_name, modes] = a:000
