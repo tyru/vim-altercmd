@@ -136,6 +136,9 @@ function! s:parse_options(args) "{{{2
     if o ==? '<buffer>'
       let opt.buffer = 1
     endif
+    if o ==? '<cmdwin>'
+      let opt.cmdwin = 1
+    endif
     let m = matchlist(o, '^<mode:\([nvoiclxs]\+\)>$')
     if !empty(m)
       let opt.modes = m[1]
