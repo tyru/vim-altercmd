@@ -29,6 +29,17 @@ endif
 
 
 
+" NOTE: :AlterCommand maps only in mapmode-c for backward compatibility.
+" :AlterCommand! maps in mapmode-ic
+" :CAlterCommand maps in mapmode-c
+" :IAlterCommand maps in mapmode-i
+" :NAlterCommand maps in mapmode-n
+" :VAlterCommand maps in mapmode-v
+" :XAlterCommand maps in mapmode-x
+" :SAlterCommand maps in mapmode-s
+" :OAlterCommand maps in mapmode-o
+" :LAlterCommand maps in mapmode-l
+
 command! -bar -bang -complete=command -nargs=* AlterCommand
 \ call altercmd#define(<q-args>, (<bang>0 ? 'ic' : 'c'))
 command! -bar       -complete=command -nargs=* CAlterCommand
