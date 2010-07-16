@@ -30,14 +30,7 @@ endfunction
 
 
 function! altercmd#define(...)  "{{{2
-  if a:0 == 1
-    try
-      let [options, lhs_list, alternate_name] = s:parse_args(a:1)
-    catch /^parse error$/
-      call s:echomsg('WarningMsg', 'invalid argument')
-      return
-    endtry
-  elseif a:0 == 2
+  if a:0 == 2
     " For :AlterCommand family
     let [args, modes] = a:000
     try
