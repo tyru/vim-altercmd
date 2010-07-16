@@ -35,6 +35,18 @@ command! -bar       -complete=command -nargs=* CAlterCommand
 \ call altercmd#define(<q-args>, 'c')
 command! -bar       -complete=command -nargs=* IAlterCommand
 \ call altercmd#define(<q-args>, 'i')
+command! -bar       -complete=command -nargs=* NAlterCommand
+\ call altercmd#define(<q-args>, 'n')
+command! -bar       -complete=command -nargs=* VAlterCommand
+\ call altercmd#define(<q-args>, 'v')
+command! -bar       -complete=command -nargs=* XAlterCommand
+\ call altercmd#define(<q-args>, 'x')
+command! -bar       -complete=command -nargs=* SAlterCommand
+\ call altercmd#define(<q-args>, 's')
+command! -bar       -complete=command -nargs=* OAlterCommand
+\ call altercmd#define(<q-args>, 'o')
+command! -bar       -complete=command -nargs=* LAlterCommand
+\ call altercmd#define(<q-args>, 'l')
 
 
 
