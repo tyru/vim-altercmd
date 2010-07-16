@@ -23,15 +23,23 @@
 " }}}
 " Interface  "{{{1
 function! altercmd#define(...)  "{{{2
-  try
-    let [options, lhs_list, alternate_name] = s:parse_args(a:000)
-  catch /^parse error$/
+  if a:0 == 1
+    try
+      let [options, lhs_list, alternate_name] = s:parse_args(a:1)
+    catch /^parse error$/
+      call s:echomsg('WarningMsg', 'invalid argument')
+      return
+    endtry
+  elseif a:0 >= 4
+    let [hoge, lhs, alternate_name, modes] = a:000
+  else
+    call s:echomsg('WarningMsg', 'invalid argument')
     return
-  endtry
+  endif
 
   for lhs in lhs_list
     execute
-    \ 'cnoreabbrev <expr>' . (options.buffer ? '<buffer>' : '')
+    \ 'cnoreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
     \ lhs
     \ '(getcmdtype() == ":" && getcmdline() ==# "' . lhs  . '")'
     \ '?' ('"' . alternate_name . '"')
@@ -41,18 +49,55 @@ endfunction
 
 
 
+
+function! s:echomsg(hi, msg) "{{{2
+  execute 'echohl' a:hi
+  echomsg a:msg
+  echohl None
+endfunction
+
+function! s:skip_white(q_args) "{{{2
+    return substitute(a:q_args, '^\s*', '', '')
+endfunction
+
+function! s:parse_one_arg_from_q_args(q_args) "{{{2
+    let arg = s:skip_white(a:q_args)
+    let head = matchstr(arg, '^.\{-}[^\\]\ze\([ \t]\|$\)')
+    let rest = strpart(arg, strlen(head))
+    return [head, rest]
+endfunction
+
+function! s:parse_options(args) "{{{2
+  let args = a:args
+  let opt = {}
+
+  while args != ''
+    let o = matchstr(args, '^<[^<>]\{-1,}>')
+    if o == ''
+      break
+    endif
+    let args = strpart(args, strlen(m))
+
+    if o ==? '<buffer>'
+      let opt.buffer = 1
+    endif
+    let m = matchlist(o, '^<mode:\([^<>]\{-1,}\)>$')
+    if !empty(m) && m[1] =~# '^[nvoiclxs]\+$'
+      let opt.modes = m[1]
+    endif
+  endwhile
+
+  return [opt, args]
+endfunction
+
 function! s:parse_args(args)  "{{{2
   let parse_error = 'parse error'
-  if len(a:args) < 2
-    throw parse_error
-  endif
+  let args = a:args
 
-  let options = {}
-  let lhs_list = []
+  let [options, args] = s:parse_options(args)
+  let [original_name, args] = s:parse_one_arg_from_q_args(args)
+  let [alternate_name, args] = s:parse_one_arg_from_q_args(args)
 
-  let options.buffer = (a:args[0] ==? '<buffer>')
-  let original_name = a:args[options.buffer ? 1 : 0]
-  let alternate_name = a:args[options.buffer ? 2 : 1]
 
   if original_name =~ '\['
     let [original_name_head, original_name_tail] = split(original_name, '[')
@@ -62,6 +107,7 @@ function! s:parse_args(args)  "{{{2
     let original_name_tail = ''
   endif
 
+  let lhs_list = []
   let original_name_tail = ' ' . original_name_tail
   for i in range(len(original_name_tail))
     let lhs = original_name_head . original_name_tail[1:i]

@@ -30,7 +30,7 @@ endif
 
 
 command! -bar -complete=command -nargs=* AlterCommand
-\ call altercmd#define(<f-args>)
+\ call altercmd#define(<q-args>)
 
 
 
