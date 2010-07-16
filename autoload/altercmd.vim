@@ -31,6 +31,7 @@ function! altercmd#define(...)  "{{{2
       return
     endtry
   elseif a:0 >= 4
+    " TODO
     let [hoge, lhs, alternate_name, modes] = a:000
   else
     call s:echomsg('WarningMsg', 'invalid argument')
