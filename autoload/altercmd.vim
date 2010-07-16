@@ -49,18 +49,22 @@ function! altercmd#define(...)  "{{{2
     return
   endif
 
-  for mode in split(modes, '\zs')
-    for lhs in lhs_list
+  call s:do_define(options, lhs_list, alternate_name, modes)
+endfunction
+
+function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
+  for mode in split(a:modes, '\zs')
+    for lhs in a:lhs_list
       if mode ==# 'c'
         let cond = '(getcmdtype() == ":" && getcmdline() ==# ' . string(lhs)  . ')'
       else
         let cond = '(getline(".") ==# ' . string(lhs) . ')'
       endif
       execute
-      \ mode . 'noreabbrev <expr>' . (get(options, 'buffer', 0) ? '<buffer>' : '')
+      \ mode . 'noreabbrev <expr>' . (get(a:options, 'buffer', 0) ? '<buffer>' : '')
       \ lhs
       \ cond
-      \ '?' string(alternate_name)
+      \ '?' string(a:alternate_name)
       \ ':' string(lhs)
     endfor
   endfor
