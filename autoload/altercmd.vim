@@ -35,7 +35,6 @@ function! altercmd#define(...)  "{{{2
     let [args, modes] = a:000
     try
       let [options, lhs_list, alternate_name] = s:parse_args(args)
-      let options.modes = modes
     catch /^parse error$/
       call s:echomsg('WarningMsg', 'invalid argument')
       return
@@ -44,14 +43,12 @@ function! altercmd#define(...)  "{{{2
     " For altercmd#define() (function version).
     let [opt_chars, lhs, alternate_name, modes] = a:000
     let options = s:convert_options(opt_chars)
-    let options.modes = modes
     let lhs_list = s:generate_lhs_list(lhs)
   else
     call s:echomsg('WarningMsg', 'invalid argument')
     return
   endif
 
-  let modes = get(options, 'modes', 'c')
   for mode in split(modes, '\zs')
     for lhs in lhs_list
       if mode ==# 'c'
