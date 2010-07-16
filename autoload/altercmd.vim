@@ -22,6 +22,13 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 " Interface  "{{{1
+function! altercmd#load()  "{{{2
+  runtime! plugin/altercmd.vim
+endfunction
+
+
+
+
 function! altercmd#define(...)  "{{{2
   if a:0 == 1
     try
@@ -66,6 +73,9 @@ function! s:echomsg(hi, msg) "{{{2
   echomsg a:msg
   echohl None
 endfunction
+
+
+
 
 function! s:skip_white(q_args) "{{{2
     return substitute(a:q_args, '^\s*', '', '')
@@ -134,9 +144,6 @@ function! s:generate_lhs_list(lhs) "{{{2
   return lhs_list
 endfunction
 
-
-
-
 function! s:convert_options(opt_chars) "{{{2
   let table = {'b': 'buffer'}
   let options = {}
@@ -146,13 +153,6 @@ function! s:convert_options(opt_chars) "{{{2
     endif
   endfor
   return options
-endfunction
-
-
-
-
-function! altercmd#load()  "{{{2
-  runtime! plugin/altercmd.vim
 endfunction
 
 
