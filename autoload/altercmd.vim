@@ -76,7 +76,7 @@ function! s:parse_options(args) "{{{2
     if o == ''
       break
     endif
-    let args = strpart(args, strlen(m))
+    let args = strpart(args, strlen(o))
 
     if o ==? '<buffer>'
       let opt.buffer = 1
