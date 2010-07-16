@@ -37,6 +37,16 @@ function! altercmd#define(...)  "{{{2
       call s:echomsg('WarningMsg', 'invalid argument')
       return
     endtry
+  elseif a:0 == 2
+    " For :AlterCommand family
+    let [args, modes] = a:000
+    try
+      let [options, lhs_list, alternate_name] = s:parse_args(args)
+      let options.modes = modes
+    catch /^parse error$/
+      call s:echomsg('WarningMsg', 'invalid argument')
+      return
+    endtry
   elseif a:0 >= 4
     let [opt_chars, lhs, alternate_name, modes] = a:000
     let options = s:convert_options(opt_chars)
