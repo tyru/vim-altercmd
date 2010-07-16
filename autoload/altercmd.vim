@@ -67,7 +67,7 @@ function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
     " Cmdwin mappings should be buffer-local.
     let options.buffer = 1
     " Cmdwin mappings should work only in insert-mode.
-    " let modes = 'i'
+    let modes = 'i'
 
     execute
     \ 'autocmd altercmd CmdwinEnter *'
@@ -76,7 +76,7 @@ function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
     \   string(options) ','
     \   string(lhs_list) ','
     \   string(alternate_name) ','
-    \   string('i') ','
+    \   string(modes) ','
     \ ')'
   endif
 
