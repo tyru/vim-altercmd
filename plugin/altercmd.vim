@@ -50,6 +50,10 @@ command! -bar       -complete=command -nargs=* LAlterCommand
 
 
 
+augroup altercmd
+augroup END
+
+
 
 let g:loaded_altercmd = 1
 

@@ -56,6 +56,25 @@ function! altercmd#define(...)  "{{{2
 endfunction
 
 function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
+  if get(a:options, 'cmdwin', 0)
+    " Avoid infinite recursion.
+    silent! unlet a:options.cmdwin
+    " Cmdwin mappings should be buffer-local.
+    let a:options.buffer = 1
+    " Cmdwin mappings should work only in insert-mode.
+    " let a:modes = 'i'
+
+    execute
+    \ 'autocmd altercmd CmdwinEnter *'
+    \ 'call'
+    \ 's:do_define('
+    \   string(a:options) ','
+    \   string(a:lhs_list) ','
+    \   string(a:alternate_name) ','
+    \   string('i') ','
+    \ ')'
+  endif
+
   for mode in split(a:modes, '\zs')
     for lhs in a:lhs_list
       if mode ==# 'c'
