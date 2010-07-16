@@ -83,14 +83,14 @@ endfunction
 
 
 function! s:skip_white(q_args) "{{{2
-    return substitute(a:q_args, '^\s*', '', '')
+  return substitute(a:q_args, '^\s*', '', '')
 endfunction
 
 function! s:parse_one_arg_from_q_args(q_args) "{{{2
-    let arg = s:skip_white(a:q_args)
-    let head = matchstr(arg, '^.\{-}[^\\]\ze\([ \t]\|$\)')
-    let rest = strpart(arg, strlen(head))
-    return [head, rest]
+  let arg = s:skip_white(a:q_args)
+  let head = matchstr(arg, '^.\{-}[^\\]\ze\([ \t]\|$\)')
+  let rest = strpart(arg, strlen(head))
+  return [head, rest]
 endfunction
 
 function! s:parse_options(args) "{{{2
