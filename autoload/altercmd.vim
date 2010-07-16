@@ -62,21 +62,24 @@ function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
   let modes = a:modes
 
   if get(options, 'cmdwin', 0)
+    let opt = deepcopy(options, 1)
+    let m = modes
+
     " Avoid infinite recursion.
-    silent! unlet options.cmdwin
+    silent! unlet opt.cmdwin
     " Cmdwin mappings should be buffer-local.
-    let options.buffer = 1
+    let opt.buffer = 1
     " Cmdwin mappings should work only in insert-mode.
-    let modes = 'i'
+    let m = 'i'
 
     execute
     \ 'autocmd altercmd CmdwinEnter *'
     \ 'call'
     \ 's:do_define('
-    \   string(options) ','
+    \   string(opt) ','
     \   string(lhs_list) ','
     \   string(alternate_name) ','
-    \   string(modes) ','
+    \   string(m) ','
     \ ')'
   endif
 
