@@ -31,6 +31,10 @@ endif
 
 command! -bar -bang -complete=command -nargs=* AlterCommand
 \ call altercmd#define(<q-args>, (<bang>0 ? 'ic' : 'c'))
+command! -bar       -complete=command -nargs=* CAlterCommand
+\ call altercmd#define(<q-args>, 'c')
+command! -bar       -complete=command -nargs=* IAlterCommand
+\ call altercmd#define(<q-args>, 'i')
 
 
 
