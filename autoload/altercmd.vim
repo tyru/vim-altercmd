@@ -154,7 +154,7 @@ function! s:parse_args(args)  "{{{2
 
   let [options, args] = s:parse_options(args)
   let [original_name, args] = s:parse_one_arg_from_q_args(args)
-  let [alternate_name, args] = s:parse_one_arg_from_q_args(args)
+  let alternate_name = s:skip_white(args)
 
   return [options, s:generate_lhs_list(original_name), alternate_name]
 endfunction
