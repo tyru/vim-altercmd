@@ -61,16 +61,19 @@ function! s:do_define(options, lhs_list, alternate_name, modes) "{{{2
   if get(options, 'cmdwin', 0)
     let opt = deepcopy(options, 1)
     let m = modes
+    let t = get(opt, 'cmdtype', ':')
 
     " Avoid infinite recursion.
     silent! unlet opt.cmdwin
+    silent! unlet opt.cmdtype
     " Cmdwin mappings should be buffer-local.
     let opt.buffer = 1
     " Cmdwin mappings should work only in insert-mode.
     let m = 'i'
 
     execute
-    \ 'autocmd altercmd CmdwinEnter *'
+    \ 'autocmd altercmd CmdwinEnter'
+    \ t
     \ 'call'
     \ 's:do_define('
     \   string(opt) ','
@@ -136,9 +139,25 @@ function! s:parse_options(args) "{{{2
     if o ==? '<buffer>'
       let opt.buffer = 1
     endif
+
+    " <cmdwin>   : normal Ex command
+    " <cmdwin:*> * all command line window
+    " <cmdwin::> : normal Ex command
+    " <cmdwin:d> > debug mode command |debug-mode|
+    " <cmdwin:/> / forward search string
+    " <cmdwin:?> ? backward search string
+    " <cmdwin:=> = expression for "= |expr-register|
+    " <cmdwin:@> @ string for |input()|
+    " <cmdwin:-> - text for |:insert| or |:append|
     if o ==? '<cmdwin>'
       let opt.cmdwin = 1
     endif
+    let m = matchlist(o, '^<cmdwin:\([*:d/?=@-]\)>$')
+    if !empty(m)
+      let opt.cmdwin = 1
+      let opt.cmdtype = m[1] == 'd' ? '>' : m[1]
+    endif
+
     let m = matchlist(o, '^<mode:\([nvoiclxs]\+\)>$')
     if !empty(m)
       let opt.modes = m[1]
